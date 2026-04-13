@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Michael — Fase 1: A Floresta do Pão</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/fase1.css"/>
+</head>
+<body>
+<div id="game-wrap">
+  <canvas id="gameCanvas" width="900" height="500"></canvas>
+
+  <!-- ══ PHASE INTRO ══ -->
+  <div id="phase-intro">
+    <div id="phase-intro-inner">
+      <div id="phase-intro-num">FASE 1</div>
+      <div id="phase-intro-name">A FLORESTA DO PÃO</div>
+    </div>
+  </div>
+
+  <!-- ══ HUD — DESKTOP ══ -->
+  <div id="hud" class="hud-desktop">
+    <div id="hud-left">
+      <div id="hud-lives">
+        <svg id="heart1" class="hud-heart" viewBox="0 0 32 30"><path d="M16 27C16 27 2 18 2 9C2 4.5 5.5 2 9 2C12 2 14.5 3.8 16 6C17.5 3.8 20 2 23 2C26.5 2 30 4.5 30 9C30 18 16 27 16 27Z" fill="#FF2255" stroke="#CC0033" stroke-width="1.5"/><path d="M10 8C9 8 7.5 9 7.5 11" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        <svg id="heart2" class="hud-heart" viewBox="0 0 32 30"><path d="M16 27C16 27 2 18 2 9C2 4.5 5.5 2 9 2C12 2 14.5 3.8 16 6C17.5 3.8 20 2 23 2C26.5 2 30 4.5 30 9C30 18 16 27 16 27Z" fill="#FF2255" stroke="#CC0033" stroke-width="1.5"/><path d="M10 8C9 8 7.5 9 7.5 11" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        <svg id="heart3" class="hud-heart" viewBox="0 0 32 30"><path d="M16 27C16 27 2 18 2 9C2 4.5 5.5 2 9 2C12 2 14.5 3.8 16 6C17.5 3.8 20 2 23 2C26.5 2 30 4.5 30 9C30 18 16 27 16 27Z" fill="#FF2255" stroke="#CC0033" stroke-width="1.5"/><path d="M10 8C9 8 7.5 9 7.5 11" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        <div id="god-badge" class="hidden">★GOD</div>
+      </div>
+      <div id="hud-nugget-wrap">
+        <span class="nugget-emoji">🍗</span>
+        <span id="hud-nuggets">0</span>
+      </div>
+    </div>
+
+    <!-- MENU BUTTON CENTER TOP -->
+    <div id="hud-center-top">
+      <button class="hud-menu-btn" onclick="openIngameMenu()" title="Menu [ESC]">☰ MENU</button>
+    </div>
+
+    <div id="hud-right-top">
+      <button id="hud-bag-btn" onclick="toggleBag()" title="Mochila [Q]">
+        <svg viewBox="0 0 32 32" width="22" height="22"><rect x="8" y="12" width="16" height="16" rx="3" fill="#8B4513" stroke="#CC7722" stroke-width="1.5"/><path d="M12 12C12 8 20 8 20 12" stroke="#CC7722" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="14" y="17" width="4" height="3" rx="1" fill="#CC7722"/></svg>
+        <span id="bag-item-dot" class="hidden"></span>
+      </button>
+      <div id="hud-progress-wrap">
+        <div id="hud-progress-bar"><div id="hud-progress-fill"></div></div>
+        <span style="font-size:12px">🍞</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GAMEPAD HINTS (bottom-left) ══ -->
+  <div id="gamepad-hints" class="hidden">
+    <div class="gph-title" id="gph-title">CONTROLE</div>
+    <div class="gph-row"><span class="gph-btn gph-a" id="gph-btn-jump"></span><span class="gph-label">PULAR</span></div>
+    <div class="gph-row"><span class="gph-btn gph-x" id="gph-btn-interact"></span><span class="gph-label">INTERAGIR</span></div>
+    <div class="gph-row"><span class="gph-btn gph-y" id="gph-btn-bag"></span><span class="gph-label">MOCHILA</span></div>
+    <div class="gph-row"><span class="gph-btn gph-start" id="gph-btn-menu"></span><span class="gph-label">MENU</span></div>
+    <div class="gph-row">
+      <svg viewBox="0 0 36 20" width="36" height="20"><circle cx="10" cy="10" r="9" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/><circle cx="10" cy="10" r="4" fill="rgba(255,255,255,0.3)"/><text x="24" y="15" font-size="14" fill="rgba(255,255,255,0.5)">+</text></svg>
+      <span class="gph-label">MOVER</span>
+    </div>
+  </div>
+
+  <!-- ══ INVENTORY PANEL (gamepad/fullscreen) ══ -->
+  <div id="inventory-panel" class="hidden">
+    <div id="inv-panel-box">
+      <div class="inv-panel-header">
+        <span>MOCHILA</span>
+        <span id="inv-panel-close-hint" class="inv-close-hint"></span>
+      </div>
+      <div id="inv-panel-slots">
+        <div class="inv-panel-slot" id="inv-ps-0" data-slot="0">
+          <div class="inv-ps-icon" id="inv-ps-icon-0">—</div>
+          <div class="inv-ps-name" id="inv-ps-name-0">VAZIO</div>
+          <div class="inv-ps-desc" id="inv-ps-desc-0"></div>
+        </div>
+      </div>
+      <div id="inv-panel-action">
+        <button class="inv-use-btn gp-focused" id="inv-use-btn" onclick="invPanelUse()">USAR ITEM</button>
+      </div>
+      <div id="inv-panel-hint"></div>
+    </div>
+  </div>
+
+  <!-- ══ INTERACT HINT ══ -->
+  <div id="interact-hint" class="hidden">
+    <span id="interact-icon">🏪</span>
+    <span id="interact-text">[E] Entrar na loja</span>
+  </div>
+
+  <!-- ══ INVULNERABILITY BAR ══ -->
+  <div id="invul-bar-wrap" class="hidden">
+    <div id="invul-label">⚡ INVULNERÁVEL</div>
+    <div id="invul-bar"><div id="invul-fill"></div></div>
+    <div id="invul-timer">30s</div>
+  </div>
+
+  <!-- ══ DAMAGE FLASH ══ -->
+  <div id="damage-flash"></div>
+
+  <!-- ══ LOJA ══ -->
+  <div id="shop-overlay" class="hidden">
+    <div id="shop-box">
+      <div id="shop-header">
+        <span>🏪</span>
+        <span id="shop-name">FEIRA DO RHYAN</span>
+        <button id="shop-close" onclick="closeShop()">✕</button>
+      </div>
+      <div id="shop-rhyan">
+        <div id="rhyan-sprite">🧑‍🌾</div>
+        <div id="rhyan-speech">"Oi, caminhante! Tenho exatamente o que você precisa!"</div>
+      </div>
+      <div id="shop-currency"><span class="nugget-emoji">🍗</span> Seus Nuggets: <span id="shop-nugget-display">0</span></div>
+      <div id="shop-items">
+        <div class="shop-item" id="shop-item-life" data-idx="0">
+          <div class="shop-item-icon"><svg viewBox="0 0 32 30" width="36" height="36"><path d="M16 27C16 27 2 18 2 9C2 4.5 5.5 2 9 2C12 2 14.5 3.8 16 6C17.5 3.8 20 2 23 2C26.5 2 30 4.5 30 9C30 18 16 27 16 27Z" fill="#FF2255" stroke="#CC0033" stroke-width="1.5"/></svg></div>
+          <div class="shop-item-info">
+            <div class="shop-item-name">VIDA EXTRA</div>
+            <div class="shop-item-desc">Recupera 1 vida (máx. 3)</div>
+          </div>
+          <div class="shop-item-right">
+            <div class="shop-item-price"><span class="nugget-emoji">🍗</span> 30</div>
+            <button class="shop-buy-btn" id="shop-buy-life" onclick="buyItem('life')">COMPRAR</button>
+          </div>
+        </div>
+        <div class="shop-item" id="shop-item-potion" data-idx="1">
+          <div class="shop-item-icon" style="font-size:28px;width:44px;display:flex;align-items:center;justify-content:center">⚡</div>
+          <div class="shop-item-info">
+            <div class="shop-item-name">POÇÃO DE INVULNERABILIDADE</div>
+            <div class="shop-item-desc">30s de imunidade a danos</div>
+          </div>
+          <div class="shop-item-right">
+            <div class="shop-item-price"><span class="nugget-emoji">🍗</span> 20</div>
+            <button class="shop-buy-btn" id="shop-buy-potion" onclick="buyItem('potion')">COMPRAR</button>
+          </div>
+        </div>
+      </div>
+      <div id="shop-msg"></div>
+      <div id="shop-footer" id="shop-gp-hint">[E] ou ✕ para sair</div>
+    </div>
+  </div>
+
+  <!-- ══ IN-GAME MENU ══ -->
+  <div id="ingame-menu" class="hidden">
+    <div id="igm-box">
+      <div id="igm-header">
+        <span id="igm-title">☰ MENU</span>
+        <button class="igm-close" onclick="closeIngameMenu()">✕</button>
+      </div>
+      <div id="igm-tabs">
+        <button class="igm-tab active" id="igm-tab-game-btn" onclick="igmTab('game')">🎮 JOGO</button>
+        <button class="igm-tab" id="igm-tab-audio-btn" onclick="igmTab('audio')">🔊 ÁUDIO</button>
+        <button class="igm-tab" id="igm-tab-codes-btn" onclick="igmTab('codes')">🎁 CÓDIGOS</button>
+      </div>
+      <div id="igm-tab-game" class="igm-panel active">
+        <button class="igm-action-btn btn-resume" id="igm-btn-resume" onclick="closeIngameMenu()">▶ CONTINUAR</button>
+        <button class="igm-action-btn btn-restart" id="igm-btn-restart" onclick="confirmRestart()">🔄 REINICIAR FASE</button>
+        <button class="igm-action-btn btn-menu" id="igm-btn-exit" onclick="goToMenu()">🏠 SAIR PARA O MENU</button>
+        <div id="dev-status-row">
+          <div id="dev-god-status" class="dev-status hidden">⚡ IMORTALIDADE ATIVA</div>
+          <div id="dev-nosave-status" class="dev-status hidden">💾 AUTOSAVE DESATIVADO</div>
+        </div>
+      </div>
+      <div id="igm-tab-audio" class="igm-panel hidden">
+        <div class="igm-setting-row"><label class="igm-label">MÚSICA</label><div class="igm-slider-wrap"><input type="range" min="0" max="100" value="80" id="igm-vol-music" oninput="igmUpdateAudio('musicVol',this.value);document.getElementById('igm-vol-music-val').textContent=this.value"/><span id="igm-vol-music-val" class="igm-slider-val">80</span></div></div>
+        <div class="igm-setting-row"><label class="igm-label">EFEITOS</label><div class="igm-slider-wrap"><input type="range" min="0" max="100" value="80" id="igm-vol-sfx" oninput="igmUpdateAudio('sfxVol',this.value);document.getElementById('igm-vol-sfx-val').textContent=this.value"/><span id="igm-vol-sfx-val" class="igm-slider-val">80</span></div></div>
+        <div class="igm-setting-row"><label class="igm-label">MUDO</label><button id="igm-btn-mute" class="igm-toggle" onclick="igmToggleMute()">OFF</button></div>
+      </div>
+      <div id="igm-tab-codes" class="igm-panel hidden">
+        <p class="igm-codes-desc">Insira códigos para ganhar Nuggets ou ativar poderes!</p>
+        <div class="igm-codes-row"><input type="text" id="igm-code-input" class="igm-code-input" placeholder="CÓDIGO..." maxlength="20" oninput="this.value=this.value.toUpperCase()"/><button class="igm-redeem-btn" id="igm-btn-redeem" onclick="igmRedeemCode()">OK</button></div>
+        <div id="igm-code-result"></div>
+        <div class="igm-codes-hint">Dica: existem códigos secretos de desenvolvedor...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CONFIRM RESTART ══ -->
+  <div id="confirm-restart" class="hidden">
+    <div id="confirm-box">
+      <div class="confirm-title">⚠ REINICIAR FASE?</div>
+      <div class="confirm-sub">Progresso desta sessão será perdido!</div>
+      <div class="confirm-btns">
+        <button class="confirm-yes" id="confirm-btn-yes" onclick="restartPhase()">SIM</button>
+        <button class="confirm-no" id="confirm-btn-no" onclick="closeConfirmRestart()">NÃO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GAME OVER ══ -->
+  <div id="gameover-overlay" class="hidden">
+    <div id="gameover-box">
+      <div class="skull-icon">💀</div>
+      <div id="gameover-title">GAME OVER</div>
+      <div id="gameover-sub">Michael não aguentou...<br>tente novamente!</div>
+      <button class="go-btn" id="go-btn-retry" onclick="restartPhase()">🔄 TENTAR DE NOVO</button>
+      <button class="go-btn go-btn-sec" id="go-btn-menu" onclick="goToMenu()">🏠 MENU</button>
+    </div>
+  </div>
+
+  <!-- ══ CUTSCENE ══ -->
+  <div id="cutscene-overlay" class="hidden">
+    <div id="cutscene-box">
+      <img id="cutscene-img" src="" alt=""/>
+      <div id="cutscene-controls">
+        <button id="cutscene-prev" onclick="cutscenePrev()">◀ VOLTAR</button>
+        <div id="cutscene-dots"></div>
+        <button id="cutscene-next" onclick="cutsceneNext()">AVANÇAR ▶</button>
+      </div>
+      <div id="cutscene-gp-hint" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- ══ MOBILE CONTROLS ══ -->
+  <div id="mobile-controls" class="hidden">
+    <!-- TOP LEFT: Health bar -->
+    <div id="mob-hud-lives">
+      <svg id="mob-heart1" class="mob-heart" viewBox="0 0 32 30"><path d="M16 27C16 27 2 18 2 9C2 4.5 5.5 2 9 2C12 2 14.5 3.8 16 6C17.5 3.8 20 2 23 2C26.5 2 30 4.5 30 9C30 18 16 27 16 27Z" fill="#FF2255" stroke="#CC0033" stroke-width="1.5"/></svg>
+      <svg id="mob-heart2" class="mob-heart" viewBox="0 0 32 30"><path d="M16 27C16 27 2 18 2 9C2 4.5 5.5 2 9 2C12 2 14.5 3.8 16 6C17.5 3.8 20 2 23 2C26.5 2 30 4.5 30 9C30 18 16 27 16 27Z" fill="#FF2255" stroke="#CC0033" stroke-width="1.5"/></svg>
+      <svg id="mob-heart3" class="mob-heart" viewBox="0 0 32 30"><path d="M16 27C16 27 2 18 2 9C2 4.5 5.5 2 9 2C12 2 14.5 3.8 16 6C17.5 3.8 20 2 23 2C26.5 2 30 4.5 30 9C30 18 16 27 16 27Z" fill="#FF2255" stroke="#CC0033" stroke-width="1.5"/></svg>
+    </div>
+    <!-- TOP RIGHT: bag + nuggets + menu -->
+    <div id="mob-hud-right">
+      <div id="mob-nuggets"><span class="nugget-emoji">🍗</span><span id="mob-nugget-count">0</span></div>
+      <button id="mob-bag-btn" onclick="toggleInventoryPanel()">
+        <svg viewBox="0 0 32 32" width="20" height="20"><rect x="8" y="12" width="16" height="16" rx="3" fill="#8B4513" stroke="#CC7722" stroke-width="1.5"/><path d="M12 12C12 8 20 8 20 12" stroke="#CC7722" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="14" y="17" width="4" height="3" rx="1" fill="#CC7722"/></svg>
+        <span id="mob-bag-dot" class="hidden"></span>
+      </button>
+      <button id="mobile-menu-btn" onclick="openIngameMenu()">☰</button>
+    </div>
+    <!-- LEFT: D-PAD (left + right only) -->
+    <div id="mobile-left-zone">
+      <button id="mb-left" class="mc-btn mc-dir">
+        <svg viewBox="0 0 24 24" width="28" height="28"><path d="M15 4L6 12L15 20" stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button id="mb-right" class="mc-btn mc-dir">
+        <svg viewBox="0 0 24 24" width="28" height="28"><path d="M9 4L18 12L9 20" stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <!-- RIGHT: JUMP (big A button) + interact -->
+    <div id="mobile-right-zone">
+      <button id="mb-interact" class="mc-btn mc-interact-btn">
+        <span style="font-size:15px;font-family:'Press Start 2P',monospace">E</span>
+      </button>
+      <button id="mb-jump" class="mc-btn mc-jump-btn">
+        <span style="font-family:'Press Start 2P',monospace;font-size:18px">A</span>
+      </button>
+    </div>
+  </div>
+
+</div><!-- /game-wrap -->
+<script src="js/fase1.js"></script>
+</body>
+</html>
