@@ -1083,11 +1083,17 @@ function updateEnemies(dt){
         e.y=GROUND-e.h;
       }
       e.dir=pCx>eCx?1:-1;
+      // Walk animation
+      e.animTimer=(e.animTimer||0)+dt;
+      if(e.animTimer>160){e.animFrame=(e.animFrame+1)%2;e.animTimer=0;}
     }else if(e.type==='lettuce'){
       e.phase+=.002*dt;e.y=e.baseY+Math.sin(e.phase)*28;
       e.x+=e.vx*(dt/16);
       if(e.x<0)e.vx=Math.abs(e.vx);if(e.x>MAP_W-e.w)e.vx=-Math.abs(e.vx);
       e.dir=pCx>eCx?1:-1;
+      // Fly animation
+      e.animTimer=(e.animTimer||0)+dt;
+      if(e.animTimer>200){e.animFrame=(e.animFrame+1)%2;e.animTimer=0;}
     }else if(e.type==='carrot'){
       if(!e.charging){
         const dist=Math.abs(pCx-eCx);

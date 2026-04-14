@@ -1,93 +1,152 @@
 /* ═══════════════════════════════════════════════════════
    UI SCALE — Michael: Em Busca do Big Mac Perdido
-   Controle flutuante de escala de tela e fullscreen
+   Ajusta o zoom do jogo para caber na tela do dispositivo
+   Funciona como "DPI" — aumenta/diminui tudo proporcionalmente
+   mantendo a tela sempre preenchida
    ═══════════════════════════════════════════════════════ */
 'use strict';
 
-const UISP_KEY = 'michael_uiscale';
+const UISP_KEY = 'michael_uiscale_v2';
+let _uispOpen  = false;
+let _uiScale   = 1.0;  // multiplier sobre o fit automático
+let _brightness = 100; // 20-150
 
-let _uispOpen = false;
-let _currentScale = 1.0;
-let _currentBrightness = 100;
-
-// ── Load saved state ──
-(function uispInit() {
+// ── INIT ──
+;(function() {
   try {
     const d = JSON.parse(localStorage.getItem(UISP_KEY) || '{}');
-    if (d.scale)      _currentScale      = d.scale;
-    if (d.brightness) _currentBrightness = d.brightness;
+    if (d.scale !== undefined)      _uiScale    = parseFloat(d.scale) || 1;
+    if (d.brightness !== undefined) _brightness = parseInt(d.brightness) || 100;
   } catch(e) {}
 
-  // Apply on page load (after DOM ready)
   document.addEventListener('DOMContentLoaded', () => {
-    _applyScale(_currentScale, false);
-    _applyBrightness(_currentBrightness, false);
-    _updateFsButton();
-    // Sync slider
-    const sl = document.getElementById('uisp-brightness');
-    if (sl) sl.value = _currentBrightness;
-    // Sync scale buttons
-    _highlightScaleBtn(_currentScale);
+    _applyAll();
+    window.addEventListener('resize', _applyAll);
+    document.addEventListener('fullscreenchange', () => {
+      _applyAll();
+      _syncFsBtn();
+    });
   });
-
-  // Keep fullscreen button in sync
-  document.addEventListener('fullscreenchange', _updateFsButton);
 })();
 
-// ── TOGGLE PANEL ──
+// ── APPLY: faz o #game-wrap ou body.scale cobrir a tela ──
+function _applyAll() {
+  _applyBrightness(_brightness);
+  _syncFsBtn();
+  _syncScaleBtns();
+  _syncBrightnessSlider();
+
+  // On the game page, scale the canvas wrapper
+  const wrap = document.getElementById('game-wrap');
+  if (wrap) {
+    _fitGameWrap(wrap);
+    return;
+  }
+
+  // On menu/index, scale the menu-screen
+  const menu = document.getElementById('menu-screen');
+  if (menu) {
+    _fitMenuScreen(menu);
+  }
+}
+
+function _fitGameWrap(wrap) {
+  // The game canvas is 900×500. We want it to fill the window,
+  // then apply _uiScale as an extra multiplier.
+  const ww = window.innerWidth;
+  const wh = window.innerHeight;
+  const baseW = 900, baseH = 500;
+  const fitScale = Math.min(ww / baseW, wh / baseH);
+  const finalScale = fitScale * _uiScale;
+
+  wrap.style.width     = baseW + 'px';
+  wrap.style.height    = baseH + 'px';
+  wrap.style.transform = `scale(${finalScale})`;
+  wrap.style.transformOrigin = 'top left';
+  wrap.style.position  = 'absolute';
+  wrap.style.left      = Math.round((ww - baseW * finalScale) / 2) + 'px';
+  wrap.style.top       = Math.round((wh - baseH * finalScale) / 2) + 'px';
+  document.body.style.overflow = 'hidden';
+  document.body.style.background = '#000';
+}
+
+function _fitMenuScreen(menu) {
+  // Menu fills whole viewport, scale content inside
+  const ww = window.innerWidth;
+  const wh = window.innerHeight;
+  const baseW = 1280, baseH = 720; // design size
+  const fitScale = Math.min(ww / baseW, wh / baseH) * _uiScale;
+
+  menu.style.transformOrigin = 'top left';
+  menu.style.transform       = `scale(${fitScale})`;
+  menu.style.width           = baseW + 'px';
+  menu.style.height          = baseH + 'px';
+  menu.style.left            = Math.round((ww - baseW * fitScale) / 2) + 'px';
+  menu.style.top             = Math.round((wh - baseH * fitScale) / 2) + 'px';
+  menu.style.position        = 'absolute';
+  document.body.style.overflow = 'hidden';
+  document.body.style.background = '#000';
+}
+
+// ── PUBLIC API ──
 function toggleUIScalePanel() {
   _uispOpen = !_uispOpen;
   const panel = document.getElementById('ui-scale-panel');
   const btn   = document.getElementById('ui-scale-toggle-btn');
   if (!panel) return;
-  if (_uispOpen) {
-    panel.classList.remove('hidden');
-    _updateFsButton();
-    btn.style.background = 'linear-gradient(180deg,#FFD700,#FF6B00)';
-    btn.style.color = '#0A0400';
-  } else {
-    panel.classList.add('hidden');
-    btn.style.background = '';
-    btn.style.color = '';
+  panel.classList.toggle('hidden', !_uispOpen);
+  if (btn) {
+    btn.style.background = _uispOpen
+      ? 'linear-gradient(180deg,#FFD700,#FF6B00)' : '';
+    btn.style.color = _uispOpen ? '#0A0400' : '';
   }
+  if (_uispOpen) { _syncFsBtn(); _syncScaleBtns(); _syncBrightnessSlider(); }
 }
 
-// ── UI SCALE ──
 function setUIScale(scale) {
-  _currentScale = scale;
-  _applyScale(scale, true);
-  _highlightScaleBtn(scale);
+  _uiScale = Math.max(0.5, Math.min(2, parseFloat(scale)));
+  _applyAll();
   _save();
 }
 
-function _applyScale(scale, animate) {
-  const root = document.documentElement;
-  if (animate) root.style.transition = 'transform 0.25s ease';
-  root.style.transformOrigin = 'top left';
-  root.style.transform       = `scale(${scale})`;
-  root.style.width           = `${100 / scale}%`;
-  root.style.height          = `${100 / scale}%`;
-  if (animate) setTimeout(() => root.style.transition = '', 300);
-}
-
-function _highlightScaleBtn(scale) {
-  document.querySelectorAll('.uisp-btn').forEach(b => {
-    const bScale = parseFloat(b.textContent) / 100;
-    b.classList.toggle('uisp-active', Math.abs(bScale - scale) < 0.01);
-  });
-}
-
-// ── FULLSCREEN ──
 function uispToggleFullscreen() {
   if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen?.().catch(() => {});
+    document.documentElement.requestFullscreen?.().catch(()=>{});
   } else {
-    document.exitFullscreen?.().catch(() => {});
+    document.exitFullscreen?.().catch(()=>{});
   }
-  setTimeout(_updateFsButton, 300);
 }
 
-function _updateFsButton() {
+function uispSetBrightness(val) {
+  _brightness = Math.max(20, Math.min(150, parseInt(val)));
+  _applyBrightness(_brightness);
+  _save();
+}
+
+function _applyBrightness(val) {
+  const f = val / 100;
+  document.documentElement.style.setProperty('--brightness', f);
+  // Use a dedicated overlay instead of body filter (avoids menu glitch)
+  let ov = document.getElementById('_brightness_overlay');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = '_brightness_overlay';
+    ov.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:99998;mix-blend-mode:multiply;transition:background .2s;';
+    document.body.appendChild(ov);
+  }
+  if (val < 100) {
+    const dark = Math.round((1 - val/100) * 220);
+    ov.style.background = `rgba(0,0,0,${(1 - val/100) * 0.7})`;
+  } else if (val > 100) {
+    ov.style.background = 'transparent';
+    document.body.style.filter = `brightness(${val/100})`;
+  } else {
+    ov.style.background = 'transparent';
+    document.body.style.filter = '';
+  }
+}
+
+function _syncFsBtn() {
   const btn = document.getElementById('uisp-fs-btn');
   if (!btn) return;
   const isFS = !!document.fullscreenElement;
@@ -95,26 +154,19 @@ function _updateFsButton() {
   btn.classList.toggle('uisp-toggle-on', isFS);
 }
 
-// ── BRIGHTNESS ──
-function uispSetBrightness(val) {
-  _currentBrightness = parseInt(val);
-  _applyBrightness(_currentBrightness, false);
-  _save();
+function _syncScaleBtns() {
+  document.querySelectorAll('.uisp-btn[data-scale]').forEach(b => {
+    b.classList.toggle('uisp-active', Math.abs(parseFloat(b.dataset.scale) - _uiScale) < 0.01);
+  });
 }
 
-function _applyBrightness(val, animate) {
-  const frac = val / 100;
-  document.documentElement.style.setProperty('--brightness', frac);
-  // Also apply a CSS filter on body for real brightness control
-  document.body.style.filter = `brightness(${frac})`;
+function _syncBrightnessSlider() {
+  const sl = document.getElementById('uisp-brightness');
+  if (sl) sl.value = _brightness;
 }
 
-// ── SAVE ──
 function _save() {
   try {
-    localStorage.setItem(UISP_KEY, JSON.stringify({
-      scale: _currentScale,
-      brightness: _currentBrightness,
-    }));
+    localStorage.setItem(UISP_KEY, JSON.stringify({ scale: _uiScale, brightness: _brightness }));
   } catch(e) {}
 }
