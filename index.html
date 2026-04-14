@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#FF6B00"/>
+  <meta name="description" content="Um jogo meme onde Michael vai em busca do Big Mac roubado!"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="assets/images/icon-192.png"/>
   <title>Michael: Em Busca do Big Mac Perdido</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Cinzel:wght@700;900&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/uiscale.css" />
 </head>
 <body>
 
@@ -38,7 +43,7 @@
       <div id="title-shadow">MICHAEL</div>
       <div id="title-main">MICHAEL</div>
       <div id="subtitle">EM BUSCA DO BIG MAC PERDIDO</div>
-      <div id="title-flavor">O que um homem faz pra poder zoar o amigo?</div>
+      <div id="title-flavor">Uma história baseada em fatos que não aconteceram</div>
     </div>
 
     <nav id="menu-nav">
@@ -144,13 +149,13 @@
       <button class="modal-close" onclick="closeAllModals()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="credit-block"><p class="credit-role">DIRETOR EXECUTIVO</p><p class="credit-name">João Pedro</p></div>
-      <div class="credit-block"><p class="credit-role">PROTAGONISTA INVOLUNTÁRIO</p><p class="credit-name">Michael</p></div>
-      <div class="credit-block"><p class="credit-role">PATRIOCINIOS</p><p class="credit-name">MC DONALDS, NETFLIX, SONY, AMAZON E SHOPEE</p></div>
+      <div class="credit-block"><p class="credit-role">DIRETOR EXECUTIVO DE ZOAÇÕES</p><p class="credit-name">Seu amigo cruel</p></div>
+      <div class="credit-block"><p class="credit-role">PROTAGONISTA INVOLUNTÁRIO</p><p class="credit-name">Michael "Big Mac" Silva</p></div>
+      <div class="credit-block"><p class="credit-role">INSPIRAÇÃO CULINÁRIA</p><p class="credit-name">McDonald's (sem patrocínio)</p></div>
       <div class="credit-block"><p class="credit-role">ENGINE DO JOGO</p><p class="credit-name">HTML puro mesmo, sem vergonha</p></div>
-      <div class="credit-block"><p class="credit-role">TRILHA SONORA</p><p class="credit-name">MUSICA DE FARMAR AURA</p></div>
-      <div class="credit-block"><p class="credit-role">DIREITOS AUTORAIS</p><p class="credit-name">Nenhum, so esperar o processo</p></div>
-      <p class="credit-footer">🍔</p>
+      <div class="credit-block"><p class="credit-role">TRILHA SONORA</p><p class="credit-name">Silêncio constrangedor</p></div>
+      <div class="credit-block"><p class="credit-role">DIREITOS AUTORAIS</p><p class="credit-name">0%. Roubei mesmo.</p></div>
+      <p class="credit-footer">🍔 Nenhum Big Mac foi prejudicado na produção deste jogo 🍔</p>
     </div>
   </div>
 
@@ -272,11 +277,11 @@
           <div class="key-row"><span class="key">BTN A</span><span class="key-desc">Pular</span></div>
           <div class="key-row"><span class="key">BTN B</span><span class="key-desc">Atacar</span></div>
         </div>
-        <p class="controls-note">⚠ Controles on-screen aparecerão no jogo</p>
+        <p class="controls-note">⚠ Controles on-screen aparecerão no jogo!</p>
       </div>
     </div>
     <div id="tab-promo" class="tab-content hidden">
-      <p class="promo-desc">Tem um código promocional? Resgate aqui para ganhar recompensas</p>
+      <p class="promo-desc">Tem um código promocional? Resgate aqui para ganhar Nuggets bônus e outros segredos!</p>
       <div class="promo-input-row">
         <input type="text" id="promo-input" class="promo-input" placeholder="DIGITE O CÓDIGO..." maxlength="20" oninput="this.value=this.value.toUpperCase()"/>
         <button class="promo-btn" onclick="redeemCode()">RESGATAR</button>
@@ -287,7 +292,40 @@
     </div>
   </div>
 
+  <script src="js/uiscale.js"></script>
   <script src="js/music.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    }
+  </script>
+
+  <!-- ═══ UI SCALE FLOAT BUTTON (index) ═══ -->
+  <div id="ui-scale-float" title="Ajustar tela">
+    <button onclick="toggleUIScalePanel()" id="ui-scale-toggle-btn">⛶</button>
+  </div>
+  <div id="ui-scale-panel" class="hidden">
+    <div class="uisp-header">⛶ TELA</div>
+    <div class="uisp-row">
+      <span class="uisp-label">TAMANHO UI</span>
+      <div class="uisp-btns">
+        <button class="uisp-btn" onclick="setUIScale(0.8)">80%</button>
+        <button class="uisp-btn uisp-active" id="uisc-100" onclick="setUIScale(1)">100%</button>
+        <button class="uisp-btn" onclick="setUIScale(1.2)">120%</button>
+        <button class="uisp-btn" onclick="setUIScale(1.5)">150%</button>
+      </div>
+    </div>
+    <div class="uisp-row">
+      <span class="uisp-label">TELA CHEIA</span>
+      <button class="uisp-toggle" id="uisp-fs-btn" onclick="uispToggleFullscreen()">OFF</button>
+    </div>
+    <div class="uisp-row">
+      <span class="uisp-label">BRILHO</span>
+      <input type="range" min="20" max="150" value="100" id="uisp-brightness"
+             oninput="uispSetBrightness(this.value)"/>
+    </div>
+  </div>
 </body>
 </html>

@@ -6,6 +6,7 @@
   <title>Michael — Fase 1: A Floresta do Pão</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/fase1.css"/>
+  <link rel="stylesheet" href="css/uiscale.css"/>
 </head>
 <body>
 <div id="game-wrap">
@@ -252,6 +253,35 @@
   </div>
 
 </div><!-- /game-wrap -->
+
+<!-- ═══ UI SCALE FLOAT BUTTON (fase1) ═══ -->
+<div id="ui-scale-float" title="Ajustar tela">
+  <button onclick="toggleUIScalePanel()" id="ui-scale-toggle-btn">⛶</button>
+</div>
+<div id="ui-scale-panel" class="hidden">
+  <div class="uisp-header">⛶ TELA</div>
+  <div class="uisp-row">
+    <span class="uisp-label">TAMANHO</span>
+    <div class="uisp-btns">
+      <button class="uisp-btn" onclick="setUIScale(0.8)">80%</button>
+      <button class="uisp-btn uisp-active" id="uisc-100" onclick="setUIScale(1)">100%</button>
+      <button class="uisp-btn" onclick="setUIScale(1.2)">120%</button>
+      <button class="uisp-btn" onclick="setUIScale(1.5)">150%</button>
+    </div>
+  </div>
+  <div class="uisp-row">
+    <span class="uisp-label">TELA CHEIA</span>
+    <button class="uisp-toggle" id="uisp-fs-btn" onclick="uispToggleFullscreen()">OFF</button>
+  </div>
+  <div class="uisp-row">
+    <span class="uisp-label">BRILHO</span>
+    <input type="range" min="20" max="150" value="100" id="uisp-brightness"
+           oninput="uispSetBrightness(this.value)"/>
+  </div>
+</div>
+
+<script src="js/uiscale.js"></script>
+<script src="js/music.js"></script>
 <script src="js/fase1.js"></script>
 </body>
 </html>
