@@ -186,7 +186,9 @@ function addNuggets(amount) {
 // INICIAR / CONTINUAR JOGO
 // ──────────────────────────────────────────────────────────────
 function applyFullscreenSetting() {
-  if (STATE.settings.fullscreen) {
+  if (typeof uispAutoFullscreen === 'function') {
+    uispAutoFullscreen();
+  } else if (STATE.settings.fullscreen) {
     document.documentElement.requestFullscreen?.().catch(()=>{});
   }
 }
@@ -222,25 +224,25 @@ const BOOK_PAGES = [
   {
     image: 'assets/images/story/page1.png',
     alt:   'Michael chegando ao McDonald\'s',
-    text:  '"Era uma vez, um garoto chamado Michael. Michael era muito fã do McDonald, e estava indo lá num sábado, a sétima vez na semana pedir o seu bigmac para o seu café da manhã."',
+    text:  'Era uma manhã comum quando Michael, nosso herói de coração tão grande quanto seu apetite, acordou com um único pensamento: seu hambúrguer diário no McDonald\'s.',
     num:   '— I —',
   },
   {
     image: 'assets/images/story/page2.png',
     alt:   'Big Mac roubado!',
-    text:  'Mas quando ele falou seu pedido para o atendente, o atendente dá a péssima notícia que os ingredientes do Big Mac foram roubados!!!',
+    text:  'Ao chegar no balcão, fez seu pedido de sempre. Mas o atendente ficou pálido como queijo fatiado: "S-senhor... o Big Mac foi ROUBADO!" O hambúrguer e todos os ingredientes tinham desaparecido.',
     num:   '— II —',
   },
   {
     image: 'assets/images/story/page3.png',
     alt:   'Michael em desespero',
-    text:  'Michael entra em pânico. O que seria da sua vida sem os seus lindos hambúrgueres? Mas o atendente fala uma coisa importante, se Michael fosse valente o bastante...',
+    text:  '"ROUBADO?!" Michael quase desmaiou. Com voz trêmula e estômago em protesto, ele perguntou ao atendente: "O que eu faço?! O que EU posso fazer?!"',
     num:   '— III —',
   },
   {
     image: 'assets/images/story/page4.png',
     alt:   'Michael parte em missão',
-    text:  'Ele poderia seguir na floresta  para encontrar os ingredientes roubados, e então juntar para ter o seu bigmac de volta. Michael aceita, essa agora é sua missão',
+    text:  'Com um olhar sério, o atendente apontou para além da janela: "Os ingredientes foram levados para a floresta atrás da cidade." Michael respirou fundo, deu um soco na mesa e declarou: "EU VOU RECUPERAR O BIG MAC!"',
     num:   '— IV —',
   },
 ];

@@ -198,8 +198,10 @@ const P = {
   sprites:{},
 };
 ['idle','run0','run1','run2','run3','jump','hurt'].forEach(n=>{
-  const img=new Image(); img.src=`assets/sprites/Michael/${n}.png`;
+  const img=new Image();
   img.onload=()=>P.sprites[n]=img;
+  img.onerror=()=>{P.sprites[n]=null;}; // explicit null = use procedural
+  img.src=`assets/sprites/Michael/${n}.png`;
 });
 
 // ═══ PARTICLES ═══
@@ -397,6 +399,7 @@ function preloadBgImages() {
     names.forEach((name,i)=>{
       const img=new Image();
       img.onload=()=>{enemyImgs[type][i]=img;};
+      img.onerror=()=>{enemyImgs[type][i]=null;};
       img.src=`assets/sprites/Enemies/${name}.png`;
     });
   });
@@ -1665,6 +1668,12 @@ function init(){
   spawnEnemies();
   spawnMapNuggets();
   setupInput(); setupMobile();
+
+  // Auto fullscreen on game start
+  if (typeof uispAutoFullscreen === 'function') {
+    // Small delay so browser allows it after user interaction (page load click)
+    setTimeout(uispAutoFullscreen, 300);
+  }
 
   // Start game music
   if (typeof musicPlayGame === 'function') {
