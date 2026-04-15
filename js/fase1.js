@@ -861,22 +861,28 @@ function drawEnemy(e,camX){
   if(sx<-80||sx>CW+80)return;
   if(e.hitTimer>0){ctx.save();ctx.globalAlpha=.55;ctx.fillStyle='#FFF';ctx.fillRect(sx,e.y,e.w,e.h);ctx.restore();return;}
 
-  // Try sprite image first
+  // Try sprite image — fallback to other frame if one is missing
   let sprImg = null;
-  if (e.type === 'tomato')  sprImg = enemyImgs.tomato[e.animFrame % 2];
-  else if (e.type === 'lettuce') sprImg = enemyImgs.lettuce[e.animFrame % 2];
-  else if (e.type === 'carrot')  sprImg = enemyImgs.carrot[e.charging ? 1 : 0];
+  if(e.type==='tomato'){
+    const f=e.animFrame%2;
+    sprImg=enemyImgs.tomato[f]||enemyImgs.tomato[1-f]||null;
+  }else if(e.type==='lettuce'){
+    const f=e.animFrame%2;
+    sprImg=enemyImgs.lettuce[f]||enemyImgs.lettuce[1-f]||null;
+  }else if(e.type==='carrot'){
+    sprImg=enemyImgs.carrot[e.charging?1:0]||enemyImgs.carrot[e.charging?0:1]||null;
+  }
 
-  if (sprImg) {
+  if(sprImg){
     ctx.save();
-    ctx.translate(sx + e.w/2, e.y + e.h/2);
-    if (e.dir === -1) ctx.scale(-1, 1);
-    ctx.drawImage(sprImg, -e.w/2, -e.h/2, e.w, e.h);
+    ctx.translate(sx+e.w/2,e.y+e.h/2);
+    if(e.dir===-1)ctx.scale(-1,1);
+    ctx.drawImage(sprImg,-e.w/2,-e.h/2,e.w,e.h);
     ctx.restore();
     return;
   }
 
-  // Fallback procedural
+  // Procedural fallback
   if(e.type==='tomato')drawTomato(e,sx);
   else if(e.type==='lettuce')drawLettuce(e,sx);
   else if(e.type==='carrot')drawCarrot(e,sx);

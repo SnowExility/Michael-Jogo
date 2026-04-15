@@ -45,24 +45,25 @@ function _fitElement(el, baseW, baseH) {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  // How much we need to scale to fit the base size exactly
   const fitScale = Math.min(vw / baseW, vh / baseH);
   const finalScale = fitScale * _uiScale;
 
-  const sw = Math.round(baseW * finalScale);
-  const sh = Math.round(baseH * finalScale);
+  // px dimensions after scaling
+  const sw = baseW * finalScale;
+  const sh = baseH * finalScale;
 
-  // Center in viewport
-  const left = Math.round((vw - sw) / 2);
-  const top  = Math.round((vh - sh) / 2);
+  // pixel-perfect center offset
+  const left = Math.floor((vw - sw) / 2);
+  const top  = Math.floor((vh - sh) / 2);
 
   el.style.position        = 'fixed';
   el.style.width           = baseW + 'px';
   el.style.height          = baseH + 'px';
-  el.style.transformOrigin = '0 0';
-  el.style.transform       = `translate(${left}px, ${top}px) scale(${finalScale})`;
   el.style.left            = '0';
   el.style.top             = '0';
+  el.style.margin          = '0';
+  el.style.transformOrigin = 'top left';
+  el.style.transform       = `translate(${left}px,${top}px) scale(${finalScale})`;
   el.style.zIndex          = '1';
 }
 
@@ -168,10 +169,25 @@ function _save() {
   catch(e) {}
 }
 
-// ── AUTO FULLSCREEN (call on game start) ──
+// ── AUTO FULLSCREEN ──
+// Browsers only allow requestFullscreen after a user gesture.
+// We hook the first click/touch anywhere on the page.
 function uispAutoFullscreen() {
-  // Only request fullscreen if not already in it
+  const _try = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.().catch(()=>{});
+    }
+    document.removeEventListener('click',   _try);
+    document.removeEventListener('touchend', _try);
+    document.removeEventListener('keydown',  _try);
+  };
   if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen?.().catch(()=>{});
+    // Try immediately (works if called from inside click handler)
+    document.documentElement.requestFullscreen?.().catch(()=>{
+      // Fallback: wait for next interaction
+      document.addEventListener('click',    _try, {once:true});
+      document.addEventListener('touchend', _try, {once:true});
+      document.addEventListener('keydown',  _try, {once:true});
+    });
   }
 }

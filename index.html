@@ -302,27 +302,6 @@
     }
   </script>
 
-  <div id="ui-scale-panel" class="hidden">
-    <div class="uisp-header">⛶ TELA</div>
-    <div class="uisp-row">
-      <span class="uisp-label">TAMANHO UI</span>
-      <div class="uisp-btns">
-        <button class="uisp-btn" onclick="setUIScale(0.8)" data-scale="0.8">80%</button>
-        <button class="uisp-btn uisp-active" id="uisc-100" onclick="setUIScale(1)" data-scale="1">100%</button>
-        <button class="uisp-btn" onclick="setUIScale(1.2)" data-scale="1.2">120%</button>
-        <button class="uisp-btn" onclick="setUIScale(1.5)" data-scale="1.5">150%</button>
-      </div>
-    </div>
-    <div class="uisp-row">
-      <span class="uisp-label">TELA CHEIA</span>
-      <button class="uisp-toggle" id="uisp-fs-btn" onclick="uispToggleFullscreen()">OFF</button>
-    </div>
-    <div class="uisp-row">
-      <span class="uisp-label">BRILHO</span>
-      <input type="range" min="20" max="150" value="100" id="uisp-brightness"
-             oninput="uispSetBrightness(this.value)"/>
-    </div>
-  </div>
   <!-- ═══ UI SCALE PANEL ═══ -->
   <div id="ui-scale-float"><button onclick="toggleUIScalePanel()" id="ui-scale-toggle-btn">⛶</button></div>
   <div id="ui-scale-panel" class="hidden">
@@ -331,7 +310,7 @@
       <span class="uisp-label">ZOOM</span>
       <div class="uisp-slider-group">
         <input type="range" min="50" max="200" value="100" id="uisp-scale-slider"
-               oninput="uispScaleFromSlider(this.value);document.getElementById('uisp-scale-val').textContent=this.value+'%'"/>
+               oninput="uispSliderChange(this.value);document.getElementById('uisp-scale-val').textContent=this.value+'%'"/>
         <span class="uisp-val" id="uisp-scale-val">100%</span>
       </div>
     </div>

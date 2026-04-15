@@ -276,106 +276,138 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;heigh
 
 /* ══ MOBILE CONTROLS ══ */
 #mobile-controls{
-  position:absolute;inset:0;
-  pointer-events:none;
-  z-index:20;
+  position:absolute;inset:0;pointer-events:none;z-index:20;
 }
 /* TOP LEFT: hearts */
 #mob-hud-lives{
   position:absolute;top:8px;left:10px;
-  display:flex;align-items:center;gap:4px;
-  pointer-events:none;
+  display:flex;align-items:center;gap:4px;pointer-events:none;
 }
 .mob-heart{width:24px;height:24px;filter:drop-shadow(0 0 4px rgba(255,34,85,.7));transition:opacity .3s;}
 .mob-heart.lost{opacity:.18;}
-/* TOP RIGHT: nuggets + bag + menu */
+/* TOP RIGHT */
 #mob-hud-right{
   position:absolute;top:8px;right:10px;
-  display:flex;align-items:center;gap:8px;
-  pointer-events:all;
+  display:flex;align-items:center;gap:6px;pointer-events:all;
 }
-#mob-nuggets{font-size:clamp(8px,1.4vw,12px);color:var(--yellow);text-shadow:0 0 6px var(--yellow);display:flex;align-items:center;gap:4px;}
+#mob-nuggets{font-size:clamp(8px,1.4vw,11px);color:var(--yellow);text-shadow:0 0 6px var(--yellow);display:flex;align-items:center;gap:4px;}
 #mob-bag-btn{
-  position:relative;background:rgba(0,0,0,.6);border:2px solid rgba(255,107,0,.55);
-  border-radius:6px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;pointer-events:all;
+  position:relative;
+  background:linear-gradient(180deg,#3A1800,#1E0A00);
+  border:3px solid #FF6B00;
+  box-shadow:inset -3px -3px 0 #5A2000,0 4px 0 #5A2000,0 5px 0 #000;
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;pointer-events:all;image-rendering:pixelated;
+  border-radius:0;
 }
-#mob-bag-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#44FF88;border-radius:50%;border:1px solid #000;}
+#mob-bag-btn:active{transform:translateY(4px);box-shadow:inset -1px -1px 0 #5A2000,0 1px 0 #5A2000;}
+#mob-bag-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:#44FF88;border:2px solid #000;}
 #mobile-menu-btn{
-  font-family:'Press Start 2P',monospace;font-size:11px;
-  background:linear-gradient(180deg,var(--yellow),var(--orange));
-  border:none;color:var(--dark);padding:7px 10px;cursor:pointer;
-  box-shadow:inset -2px -2px 0 var(--orange-dark),0 2px 0 var(--orange-dark);
-  pointer-events:all;
+  font-family:'Press Start 2P',monospace;font-size:9px;
+  background:linear-gradient(180deg,#FFD700,#FF6B00);
+  border:none;color:#0A0400;padding:7px 10px;cursor:pointer;
+  box-shadow:inset -3px -3px 0 #CC4400,0 4px 0 #CC4400,0 5px 0 #000;
+  pointer-events:all;border-radius:0;
+  letter-spacing:.06em;
 }
-/* LEFT: D-PAD */
+#mobile-menu-btn:active{transform:translateY(4px);box-shadow:inset -1px -1px 0 #CC4400;}
+
+/* LEFT: D-PAD pixel art */
 #mobile-left-zone{
-  position:absolute;bottom:20px;left:14px;
-  display:flex;gap:10px;
-  pointer-events:all;
+  position:absolute;bottom:18px;left:12px;
+  display:flex;gap:6px;pointer-events:all;
 }
-/* RIGHT: Jump + interact */
 #mobile-right-zone{
-  position:absolute;bottom:20px;right:14px;
-  display:flex;align-items:flex-end;gap:10px;
-  pointer-events:all;
+  position:absolute;bottom:18px;right:12px;
+  display:flex;align-items:flex-end;gap:8px;pointer-events:all;
 }
+
+/* ── BASE ── */
 .mc-btn{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   cursor:pointer;user-select:none;-webkit-user-select:none;pointer-events:all;
-  transition:transform .08s,opacity .1s;
+  image-rendering:pixelated; transition:transform .06s;
+  border-radius:0;
 }
-.mc-btn:active,.mc-btn.pressed{transform:scale(.9);opacity:.8;}
+
+/* ── D-PAD (laranja pixel art) ── */
 .mc-dir{
-  width:64px;height:64px;
-  background:rgba(0,0,0,.65);
-  border:3px solid rgba(255,255,255,.35);
-  border-radius:10px;color:rgba(255,255,255,.8);
-}
-.mc-jump-btn{
   width:72px;height:72px;
-  background:radial-gradient(circle,#22AA44,#155A22);
-  border:3px solid #44CC66;border-radius:50%;color:#FFF;
-  box-shadow:0 4px 0 #0A3A10,0 0 16px rgba(34,170,68,.5);
+  background:linear-gradient(180deg,#2A1200 0%,#1A0800 60%,#0A0400 100%);
+  border:4px solid #FF6B00;
+  color:#FF9944;
+  box-shadow:
+    inset 3px 3px 0 rgba(255,153,68,.25),
+    inset -3px -3px 0 rgba(0,0,0,.7),
+    0 6px 0 #8B3A00,
+    0 7px 0 #000;
 }
+.mc-dir:active,.mc-dir.pressed{
+  box-shadow:inset 3px 3px 0 rgba(0,0,0,.5);
+  transform:translateY(6px)!important;
+}
+.mc-dir svg{width:32px;height:32px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.8));}
+
+/* ── PULAR — verde pixel art (igual botão A do Xbox) ── */
+.mc-jump-btn{
+  width:80px;height:80px;
+  background:linear-gradient(180deg,#228833 0%,#166622 60%,#0A3A10 100%);
+  border:4px solid #55EE66;
+  color:#FFF;
+  box-shadow:
+    inset 3px 3px 0 rgba(180,255,190,.3),
+    inset -3px -3px 0 rgba(0,0,0,.6),
+    0 7px 0 #0A3A10,
+    0 8px 0 #000;
+  font-family:'Press Start 2P',monospace;font-size:18px;letter-spacing:.06em;
+  text-shadow:2px 2px 0 #000,0 0 8px rgba(100,255,120,.4);
+}
+.mc-jump-btn:active,.mc-jump-btn.pressed{
+  box-shadow:inset 3px 3px 0 rgba(0,0,0,.5);
+  transform:translateY(7px)!important;
+}
+
+/* ── INTERAGIR — amarelo pixel art ── */
 .mc-interact-btn{
-  width:50px;height:50px;
-  background:radial-gradient(circle,#1166CC,#0A3A8A);
-  border:3px solid #3388FF;border-radius:50%;color:#FFF;
-  box-shadow:0 3px 0 #062260,0 0 12px rgba(17,102,204,.5);
-  align-self:flex-end;margin-bottom:6px;
+  width:56px;height:56px;
+  background:linear-gradient(180deg,#CC8800 0%,#994400 60%,#5A2200 100%);
+  border:4px solid #FFD700;
+  color:#FFF;
+  box-shadow:
+    inset 2px 2px 0 rgba(255,230,120,.3),
+    inset -2px -2px 0 rgba(0,0,0,.6),
+    0 5px 0 #5A2200,
+    0 6px 0 #000;
+  font-family:'Press Start 2P',monospace;font-size:13px;
+  text-shadow:2px 2px 0 #000;
+  align-self:flex-end;margin-bottom:8px;
+}
+.mc-interact-btn:active,.mc-interact-btn.pressed{
+  box-shadow:inset 2px 2px 0 rgba(0,0,0,.5);
+  transform:translateY(5px)!important;
 }
 
-/* Mobile HUD hide desktop version */
-.hud-mobile-hidden { display: none !important; }
-
-/* Mobile controls visible even in desktop mode for gamepad hint reference */
-@media (max-width: 600px) {
-  #mobile-left-zone { gap: 6px; }
-  .mc-dir { width: 56px; height: 56px; }
-  .mc-jump-btn { width: 64px; height: 64px; }
-  .mc-interact-btn { width: 44px; height: 44px; }
+/* small screens */
+@media(max-width:600px){
+  .mc-dir{width:64px;height:64px;}
+  .mc-jump-btn{width:72px;height:72px;font-size:16px;}
+  .mc-interact-btn{width:50px;height:50px;font-size:12px;}
 }
 
-/* ─── BIGGER MOBILE BUTTONS ─── */
-.mc-jump-btn  { width: 80px !important; height: 80px !important; font-size: 22px !important; }
-.mc-interact-btn { width: 58px !important; height: 58px !important; }
-.mc-dir       { width: 72px !important; height: 72px !important; }
 
-/* ─── BIGGER GAMEPAD HINTS ─── */
-#gamepad-hints { padding: 10px 14px !important; gap: 7px !important; }
-.gph-btn  { width: 22px !important; height: 22px !important; font-size: 9px !important; }
-.gph-label { font-size: clamp(5px, .85vw, 8px) !important; }
-.gph-title { font-size: 7px !important; }
-
-/* ─── GAMEPAD FOCUS IN FASE1 ─── */
-.gp-focused {
-  outline: none !important;
-  box-shadow: 0 0 0 3px var(--yellow), 0 0 20px rgba(255,215,0,.6) !important;
-  transform: scale(1.05) !important;
+/* ── INVENTORY CLOSE BUTTON ── */
+.inv-close-btn{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(5px,.85vw,7px);
+  padding:5px 10px;
+  background:linear-gradient(180deg,#FF4444,#CC0000);
+  border:2px solid #880000;
+  color:#FFF;cursor:pointer;
+  box-shadow:inset -2px -2px 0 #880000,0 3px 0 #440000;
+  margin-left:auto;letter-spacing:.06em;
+  border-radius:0;
 }
-.shop-item.shop-selected {
-  border-color: var(--yellow) !important;
-  box-shadow: 0 0 0 2px var(--yellow), 0 0 16px rgba(255,215,0,.4) !important;
-  transform: scale(1.01);
+.inv-close-btn:active{transform:translateY(3px);box-shadow:none;}
+.inv-panel-header{
+  display:flex!important;align-items:center;gap:8px;flex-wrap:nowrap;
 }
