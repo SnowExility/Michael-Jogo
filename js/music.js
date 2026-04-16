@@ -73,18 +73,25 @@ function musicStop(cb) {
 
 // ─── SET VOLUME ───
 function musicSetVolume(vol) { // 0-100
-  MUS.volume = vol / 100;
-  if (MUS.masterGain && !MUS.muted) {
+  MUS.volume = Math.max(0, Math.min(1, vol / 100));
+  if (MUS.masterGain && MUS.ctx && !MUS.muted) {
     MUS.masterGain.gain.setTargetAtTime(MUS.volume, MUS.ctx.currentTime, 0.05);
+  }
+  // Also update HTML audio element if playing
+  if (MUS.audioEl && !MUS.muted) {
+    MUS.audioEl.volume = MUS.volume;
   }
 }
 
 function musicSetMute(muted) {
   MUS.muted = muted;
-  if (MUS.masterGain) {
+  if (MUS.masterGain && MUS.ctx) {
     MUS.masterGain.gain.setTargetAtTime(muted ? 0 : MUS.volume, MUS.ctx.currentTime, 0.05);
   }
-  if (MUS.audioEl) MUS.audioEl.muted = muted;
+  if (MUS.audioEl) {
+    MUS.audioEl.muted = muted;
+    MUS.audioEl.volume = muted ? 0 : MUS.volume;
+  }
 }
 
 // ─── FADE ───
@@ -366,7 +373,9 @@ function musicSyncSettings() {
   try {
     const s = JSON.parse(localStorage.getItem('michael_bigmac_save_v1') || '{}');
     const st = s.settings || {};
-    if (st.musicVol !== undefined) musicSetVolume(st.musicVol);
-    musicSetMute(!!st.mute);
+    const vol = st.musicVol !== undefined ? st.musicVol : 80;
+    const muted = !!st.mute;
+    musicSetVolume(vol);
+    musicSetMute(muted);
   } catch(e) {}
 }

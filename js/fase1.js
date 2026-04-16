@@ -1434,13 +1434,19 @@ function igmTab(id){
   const panel=document.getElementById('igm-tab-'+id);if(panel)panel.classList.remove('hidden');
 }
 function igmUpdateAudio(key,val){
-  const s=loadSave();const settings=s.settings||{};settings[key]=parseInt(val,10);devSave({settings});
-  if (typeof musicSyncSettings === 'function') musicSyncSettings();
+  const s=loadSave();
+  const settings=s.settings||{};
+  settings[key]=parseInt(val,10);
+  devSave({settings});
+  // Apply immediately
+  if(key==='musicVol' && typeof musicSetVolume === 'function') musicSetVolume(parseInt(val,10));
+  // sfxVol is read directly by f1Vol() on each sound call — no extra step needed
 }
 function igmToggleMute(){
   const s=loadSave();const st=s.settings||{};st.mute=!st.mute;devSave({settings:st});
-  const btn=document.getElementById('igm-btn-mute');btn.textContent=st.mute?'ON':'OFF';btn.classList.toggle('on',st.mute);
-  if (typeof musicSetMute === 'function') musicSetMute(st.mute);
+  const btn=document.getElementById('igm-btn-mute');
+  if(btn){btn.textContent=st.mute?'ON':'OFF';btn.classList.toggle('on',st.mute);}
+  if(typeof musicSetMute==='function') musicSetMute(st.mute);
 }
 
 // ═══ CÓDIGOS (renomeados) ═══
@@ -1602,13 +1608,16 @@ function updateCamera(){const target=P.x-CW/2+P.w/2;camX+=(target-camX)*.12;camX
 function setupMobile(){
   const platform = readPlatform();
   const mc = document.getElementById('mobile-controls');
-  // Show mobile controls for mobile OR if touch device
   const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   const showMobile = platform === 'mobile' || isTouch;
+
   if (mc) mc.classList.toggle('hidden', !showMobile);
-  // On mobile, hide desktop HUD (it's duplicated in mobile controls)
+
+  // Hide desktop HUD elements when mobile is active
   const hud = document.getElementById('hud');
-  if (hud) hud.classList.toggle('hud-mobile-hidden', showMobile);
+  if (hud) {
+    hud.style.display = showMobile ? 'none' : '';
+  }
 }
 
 // ═══ MAIN LOOP ═══
